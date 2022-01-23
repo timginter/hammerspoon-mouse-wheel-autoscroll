@@ -159,7 +159,7 @@ function mouseScrollTimerFunction()
             end
 
             deltaX = deltaXRounding(deltaX)
-            deltaY = deltaXRounding(deltaY)
+            deltaY = deltaYRounding(deltaY)
 
             -- reverse Y scroll if 'reverseVerticalScrollDirection' set to true
             if reverseVerticalScrollDirection then
