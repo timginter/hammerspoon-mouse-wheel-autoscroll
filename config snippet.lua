@@ -147,9 +147,19 @@ function mouseScrollTimerFunction()
                 deltaY = deltaY * deltaY * deltaYDirMod
             end
 
-            -- math.floor - scroll event accepts only integers
-            deltaX = math.floor(deltaX)
-            deltaY = math.floor(deltaY)
+            -- math.ceil / math.floor - scroll event accepts only integers
+            deltaXRounding = math.ceil
+            deltaYRounding = math.ceil
+
+            if deltaX < 0 then
+                deltaXRounding = math.floor
+            end
+            if deltaY < 0 then
+                deltaYRounding = math.floor
+            end
+
+            deltaX = deltaXRounding(deltaX)
+            deltaY = deltaXRounding(deltaY)
 
             -- reverse Y scroll if 'reverseVerticalScrollDirection' set to true
             if reverseVerticalScrollDirection then
