@@ -13,6 +13,7 @@ local scrollSpeedVerticalMultiplier = scrollSpeedMultiplier
 local scrollSpeedSquareAcceleration = false
 local reverseVerticalScrollDirection = false
 local mouseScrollTimerDelay = 0.01
+local fractionalScrolling = true
 
 -- circle config
 local mouseScrollCircleRad = 10
@@ -25,6 +26,8 @@ local mouseScrollTimer = nil
 local mouseScrollStartPos = 0
 local mouseScrollDragPosX = nil
 local mouseScrollDragPosY = nil
+local mouseScrollFractionX = 0
+local mouseScrollFractionY = 0
 
 overrideScrollMouseDown = hs.eventtap.new({ hs.eventtap.event.types.otherMouseDown }, function(e)
     -- uncomment line below to see the ID of pressed button
@@ -144,27 +147,52 @@ function mouseScrollTimerFunction()
                 deltaY = deltaY * deltaY * signY
             end
 
-            -- math.ceil / math.floor - scroll event accepts only integers
-            deltaXRounding = math.ceil
-            deltaYRounding = math.ceil
-
-            if deltaX < 0 then
-                deltaXRounding = math.floor
+            -- save the fractions if scrolling speed is lower than 1
+            if fractionalScrolling then
+                if -1 < deltaX and deltaX < 1 then
+                    mouseScrollFractionX = mouseScrollFractionX + deltaX
+                    if mouseScrollFractionX > 1 or mouseScrollFractionX < -1 then
+                        deltaX = mouseScrollFractionX
+                        mouseScrollFractionX = 0
+                    else
+                        deltaX = 0
+                    end
+                end
+                if -1 < deltaY and deltaY < 1 then
+                    mouseScrollFractionY = mouseScrollFractionY + deltaY
+                    if mouseScrollFractionY > 1 or mouseScrollFractionY < -1 then
+                        deltaY = mouseScrollFractionY
+                        mouseScrollFractionY = 0
+                    else
+                        deltaY = 0
+                    end
+                end
             end
-            if deltaY < 0 then
-                deltaYRounding = math.floor
+
+            -- if both X and Y are 0, then skip the update
+            if deltaX ~= 0 or deltaY ~= 0 then
+                -- math.ceil / math.floor - scroll event accepts only integers
+                deltaXRounding = math.ceil
+                deltaYRounding = math.ceil
+
+                if deltaX < 0 then
+                    deltaXRounding = math.floor
+                end
+                if deltaY < 0 then
+                    deltaYRounding = math.floor
+                end
+
+                deltaX = deltaXRounding(deltaX)
+                deltaY = deltaYRounding(deltaY)
+
+                -- reverse Y scroll if 'reverseVerticalScrollDirection' set to true
+                if reverseVerticalScrollDirection then
+                    deltaY = deltaY * -1
+                end
+
+                -- send scroll event
+                hs.eventtap.event.newScrollEvent({-deltaX, deltaY}, {}, 'pixel'):post()
             end
-
-            deltaX = deltaXRounding(deltaX)
-            deltaY = deltaYRounding(deltaY)
-
-            -- reverse Y scroll if 'reverseVerticalScrollDirection' set to true
-            if reverseVerticalScrollDirection then
-                deltaY = deltaY * -1
-            end
-
-            -- send scroll event
-            hs.eventtap.event.newScrollEvent({-deltaX, deltaY}, {}, 'pixel'):post()
         end
     end
 
