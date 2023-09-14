@@ -42,7 +42,7 @@ overrideScrollMouseDown = hs.eventtap.new({ hs.eventtap.event.types.otherMouseDo
         end
 
         -- save mouse coordinates
-        mouseScrollStartPos = hs.mouse.getAbsolutePosition()
+        mouseScrollStartPos = hs.mouse.absolutePosition()
         mouseScrollDragPosX = mouseScrollStartPos.x
         mouseScrollDragPosY = mouseScrollStartPos.y
 
@@ -57,7 +57,7 @@ end)
 overrideScrollMouseUp = hs.eventtap.new({ hs.eventtap.event.types.otherMouseUp }, function(e)
     if e:getProperty(hs.eventtap.event.properties['mouseEventButtonNumber']) == mouseScrollButtonId then
         -- send original button up event if released within 'mouseScrollCircleDeadZone' pixels of original position and scroll circle doesn't exist
-        mouseScrollPos = hs.mouse.getAbsolutePosition()
+        mouseScrollPos = hs.mouse.absolutePosition()
         xDiff = math.abs(mouseScrollPos.x - mouseScrollStartPos.x)
         yDiff = math.abs(mouseScrollPos.y - mouseScrollStartPos.y)
         if (xDiff < mouseScrollCircleDeadZone and yDiff < mouseScrollCircleDeadZone) and not mouseScrollCircle then
