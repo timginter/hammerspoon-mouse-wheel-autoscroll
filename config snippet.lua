@@ -125,6 +125,12 @@ function mouseScrollTimerFunction()
             -- get real xDiff and yDiff
             deltaX = mouseScrollDragPosX - mouseScrollStartPos.x
             deltaY = mouseScrollDragPosY - mouseScrollStartPos.y
+            signX = deltaX > 0 and 1 or (deltaX == 0 and 0 or -1)
+            signY = deltaY > 0 and 1 or (deltaY == 0 and 0 or -1)
+
+            -- create "no scroll row/column" to allow scroll only horizontally or vertically
+            deltaX = deltaX - signX * math.min(xDiff, mouseScrollCircleRad)
+            deltaY = deltaY - signY * math.min(yDiff, mouseScrollCircleRad)
 
             -- use 'scrollSpeedMultiplier'
             deltaX = deltaX * scrollSpeedMultiplier
@@ -132,19 +138,8 @@ function mouseScrollTimerFunction()
 
             -- square for better scroll acceleration
             if scrollSpeedSquareAcceleration then
-                -- mod to keep negative values
-                deltaXDirMod = 1
-                deltaYDirMod = 1
-
-                if deltaX < 0 then
-                    deltaXDirMod = -1
-                end
-                if deltaY < 0 then
-                    deltaYDirMod = -1
-                end
-
-                deltaX = deltaX * deltaX * deltaXDirMod
-                deltaY = deltaY * deltaY * deltaYDirMod
+                deltaX = deltaX * deltaX * signX
+                deltaY = deltaY * deltaY * signY
             end
 
             -- math.ceil / math.floor - scroll event accepts only integers
