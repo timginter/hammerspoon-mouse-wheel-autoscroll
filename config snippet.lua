@@ -8,6 +8,8 @@ local mouseScrollButtonId = 2
 
 -- scroll speed and direction config
 local scrollSpeedMultiplier = 0.15
+local scrollSpeedHorizontalMultiplier = scrollSpeedMultiplier
+local scrollSpeedVerticalMultiplier = scrollSpeedMultiplier
 local scrollSpeedSquareAcceleration = false
 local reverseVerticalScrollDirection = false
 local mouseScrollTimerDelay = 0.01
@@ -132,9 +134,9 @@ function mouseScrollTimerFunction()
             deltaX = deltaX - signX * math.min(xDiff, mouseScrollCircleRad)
             deltaY = deltaY - signY * math.min(yDiff, mouseScrollCircleRad)
 
-            -- use 'scrollSpeedMultiplier'
-            deltaX = deltaX * scrollSpeedMultiplier
-            deltaY = deltaY * scrollSpeedMultiplier
+            -- use 'scrollSpeedHorizontalMultiplier' and 'scrollSpeedVerticalMultiplier'
+            deltaX = deltaX * scrollSpeedHorizontalMultiplier
+            deltaY = deltaY * scrollSpeedVerticalMultiplier
 
             -- square for better scroll acceleration
             if scrollSpeedSquareAcceleration then
