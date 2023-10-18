@@ -9,6 +9,7 @@ local mouseScrollButtonId = 2
 -- scroll speed and direction config
 local scrollSpeedMultiplier = 0.15
 local scrollSpeedSquareAcceleration = false
+local scrollSpeedSquareFactor = 2
 local reverseVerticalScrollDirection = false
 local mouseScrollTimerDelay = 0.01
 
@@ -138,8 +139,8 @@ function mouseScrollTimerFunction()
 
             -- square for better scroll acceleration
             if scrollSpeedSquareAcceleration then
-                deltaX = deltaX * deltaX * signX
-                deltaY = deltaY * deltaY * signY
+                deltaX = math.abs(deltaX) ^ scrollSpeedSquareFactor * signX
+                deltaY = math.abs(deltaY) ^ scrollSpeedSquareFactor * signY
             end
 
             -- math.ceil / math.floor - scroll event accepts only integers
