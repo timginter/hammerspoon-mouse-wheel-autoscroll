@@ -42,7 +42,7 @@ overrideScrollMouseDown = hs.eventtap.new({ hs.eventtap.event.types.otherMouseDo
         end
 
         -- save mouse coordinates
-        mouseScrollStartPos = hs.mouse.getAbsolutePosition()
+        mouseScrollStartPos = hs.mouse.absolutePosition()
         mouseScrollDragPosX = mouseScrollStartPos.x
         mouseScrollDragPosY = mouseScrollStartPos.y
 
@@ -57,7 +57,7 @@ end)
 overrideScrollMouseUp = hs.eventtap.new({ hs.eventtap.event.types.otherMouseUp }, function(e)
     if e:getProperty(hs.eventtap.event.properties['mouseEventButtonNumber']) == mouseScrollButtonId then
         -- send original button up event if released within 'mouseScrollCircleDeadZone' pixels of original position and scroll circle doesn't exist
-        mouseScrollPos = hs.mouse.getAbsolutePosition()
+        mouseScrollPos = hs.mouse.absolutePosition()
         xDiff = math.abs(mouseScrollPos.x - mouseScrollStartPos.x)
         yDiff = math.abs(mouseScrollPos.y - mouseScrollStartPos.y)
         if (xDiff < mouseScrollCircleDeadZone and yDiff < mouseScrollCircleDeadZone) and not mouseScrollCircle then
@@ -125,6 +125,12 @@ function mouseScrollTimerFunction()
             -- get real xDiff and yDiff
             deltaX = mouseScrollDragPosX - mouseScrollStartPos.x
             deltaY = mouseScrollDragPosY - mouseScrollStartPos.y
+            signX = deltaX > 0 and 1 or (deltaX == 0 and 0 or -1)
+            signY = deltaY > 0 and 1 or (deltaY == 0 and 0 or -1)
+
+            -- create "no scroll row/column" to allow scroll only horizontally or vertically
+            deltaX = deltaX - signX * math.min(xDiff, mouseScrollCircleRad)
+            deltaY = deltaY - signY * math.min(yDiff, mouseScrollCircleRad)
 
             -- use 'scrollSpeedMultiplier'
             deltaX = deltaX * scrollSpeedMultiplier
@@ -132,19 +138,8 @@ function mouseScrollTimerFunction()
 
             -- square for better scroll acceleration
             if scrollSpeedSquareAcceleration then
-                -- mod to keep negative values
-                deltaXDirMod = 1
-                deltaYDirMod = 1
-
-                if deltaX < 0 then
-                    deltaXDirMod = -1
-                end
-                if deltaY < 0 then
-                    deltaYDirMod = -1
-                end
-
-                deltaX = deltaX * deltaX * deltaXDirMod
-                deltaY = deltaY * deltaY * deltaYDirMod
+                deltaX = deltaX * deltaX * signX
+                deltaY = deltaY * deltaY * signY
             end
 
             -- math.ceil / math.floor - scroll event accepts only integers
