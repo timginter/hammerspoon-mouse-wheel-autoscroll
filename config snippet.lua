@@ -11,6 +11,7 @@ local scrollSpeedMultiplier = 0.15
 local scrollSpeedHorizontalMultiplier = scrollSpeedMultiplier
 local scrollSpeedVerticalMultiplier = scrollSpeedMultiplier
 local scrollSpeedSquareAcceleration = false
+local scrollSpeedPowerFactor = 2
 local reverseVerticalScrollDirection = false
 local mouseScrollTimerDelay = 0.01
 local fractionalScrolling = true
@@ -143,8 +144,8 @@ function mouseScrollTimerFunction()
 
             -- square for better scroll acceleration
             if scrollSpeedSquareAcceleration then
-                deltaX = deltaX * deltaX * signX
-                deltaY = deltaY * deltaY * signY
+                deltaX = math.abs(deltaX) ^ scrollSpeedPowerFactor * signX
+                deltaY = math.abs(deltaY) ^ scrollSpeedPowerFactor * signY
             end
 
             -- save the fractions if scrolling speed is lower than 1
